@@ -1,4 +1,7 @@
 <script setup lang="ts">
+import { watch } from 'vue'
+import { useDialog } from 'naive-ui'
+
 interface Props {
   visible: boolean
   title?: string
@@ -20,35 +23,36 @@ const emit = defineEmits<{
   (e: 'update:visible', value: boolean): void
 }>()
 
-const handleConfirm = () => {
-  emit('confirm')
-  emit('update:visible', false)
-}
+const dialog = useDialog()
+let dialogInstance: ReturnType<typeof dialog.warning> | null = null
 
-const handleCancel = () => {
+const closeDialog = () => {
   emit('cancel')
   emit('update:visible', false)
 }
+
+watch(() => props.visible, (newVal: boolean) => {
+  if (newVal) {
+    dialogInstance = dialog.warning({
+      title: props.title,
+      content: props.message,
+      positiveText: props.confirmText,
+      negativeText: props.cancelText,
+      maskClosable: true,
+      onPositiveClick: () => {
+        emit('confirm')
+        emit('update:visible', false)
+      },
+      onNegativeClick: closeDialog,
+      onMaskClick: closeDialog
+    })
+  } else if (dialogInstance) {
+    dialogInstance.destroy()
+    dialogInstance = null
+  }
+})
 </script>
 
 <template>
-  <n-dialog :show="props.visible" @update:show="handleCancel">
-    <template #header>
-      {{ title }}
-    </template>
-    <div class="confirm-content">
-      {{ message }}
-    </div>
-    <template #action>
-      <n-button @click="handleCancel">{{ cancelText }}</n-button>
-      <n-button type="primary" @click="handleConfirm">{{ confirmText }}</n-button>
-    </template>
-  </n-dialog>
+  <!-- This component only triggers the dialog via useDialog composable -->
 </template>
-
-<style scoped>
-.confirm-content {
-  padding: 20px 0;
-  min-width: 300px;
-}
-</style>

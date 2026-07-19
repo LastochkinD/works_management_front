@@ -23,14 +23,26 @@ export interface WorkStandard {
   work?: Work
 }
 
+export interface WorksResponse {
+  success: boolean
+  data: Work[]
+}
+
 export default {
-  getAll(params?: { code?: string; name?: string; page?: number; pageSize?: number }): Promise<PaginatedResponse<Work>> {
-    return apiClient.get('/works', { params })
+  async getAll(params?: { code?: string; name?: string; page?: number; pageSize?: number }): Promise<PaginatedResponse<Work>> {
+    const response = await apiClient.get<WorksResponse>('/works', { params }) as unknown as WorksResponse
+    const items = response.data || []
+    return {
+      items,
+      total: items.length,
+      page: params?.page || 1,
+      pageSize: params?.pageSize || items.length || 50
+    }
   },
   
   getById(id: number, expand?: boolean): Promise<Work> {
-    const params = expand ? { params: { expand: 'standards' } } : {}
-    return apiClient.get(`/works/${id}`, params)
+    const params = expand ? { expand: 'standards' } : undefined
+    return apiClient.get(`/works/${id}`, params ? { params } : undefined)
   },
   
   create(data: Partial<Work>): Promise<Work> {

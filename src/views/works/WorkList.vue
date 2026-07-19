@@ -116,17 +116,18 @@ onMounted(() => {
       />
     </n-space>
 
-    <n-data-table
-      :columns="columns"
-      :data="workStore.works"
-      :loading="workStore.loading"
-      :pagination="{
-        page: workStore.pagination.page,
-        pageSize: workStore.pagination.pageSize,
-        total: workStore.pagination.total,
-        onChange: (page: number) => workStore.fetchAll({ page })
-      }"
-    />
+<n-data-table
+       :columns="columns"
+       :data="workStore.works"
+       :loading="workStore.loading"
+       :pagination="{
+         page: workStore.pagination.page,
+         pageSize: workStore.pagination.pageSize,
+         total: workStore.pagination.total,
+         onChange: (page: number) => workStore.fetchAll({ page })
+       }"
+       style="width: 100%;"
+     />
 
     <AppConfirmDialog
       v-model:visible="showConfirmDialog"

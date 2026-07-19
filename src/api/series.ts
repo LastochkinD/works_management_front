@@ -10,9 +10,21 @@ export interface Series {
   generation?: { id: number; name: string; model_id: number }
 }
 
+export interface SeriesResponse {
+  success: boolean
+  data: Series[]
+}
+
 export default {
-  getAll(params?: { generation_id?: number; page?: number; pageSize?: number; name?: string }): Promise<PaginatedResponse<Series>> {
-    return apiClient.get('/series', { params })
+  async getAll(params?: { generation_id?: number; page?: number; pageSize?: number; name?: string }): Promise<PaginatedResponse<Series>> {
+    const response = await apiClient.get<SeriesResponse>('/series', { params }) as unknown as SeriesResponse
+    const items = response.data || []
+    return {
+      items,
+      total: items.length,
+      page: params?.page || 1,
+      pageSize: params?.pageSize || items.length || 50
+    }
   },
   
   getById(id: number, expand?: boolean): Promise<Series> {

@@ -14,9 +14,21 @@ export interface PaginatedResponse<T> {
   pageSize: number
 }
 
+export interface BrandsResponse {
+  success: boolean
+  data: Brand[]
+}
+
 export default {
-  getAll(params?: { page?: number; pageSize?: number; name?: string }): Promise<PaginatedResponse<Brand>> {
-    return apiClient.get('/brands', { params })
+  async getAll(params?: { page?: number; pageSize?: number; name?: string }): Promise<PaginatedResponse<Brand>> {
+    const response = await apiClient.get<BrandsResponse>('/brands', { params }) as unknown as BrandsResponse
+    const items = response.data || []
+    return {
+      items,
+      total: items.length,
+      page: params?.page || 1,
+      pageSize: params?.pageSize || items.length || 50
+    }
   },
   
   getById(id: number, expand?: boolean): Promise<Brand> {

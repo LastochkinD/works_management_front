@@ -20,14 +20,26 @@ export interface WorkStandardItem {
   modification?: { id: number; name: string }
 }
 
+export interface StandardsResponse {
+  success: boolean
+  data: WorkStandardItem[]
+}
+
 export default {
-  getAll(params?: { 
+  async getAll(params?: { 
     work_id?: number; 
     brand_id?: number;
     page?: number; 
     pageSize?: number 
   }): Promise<PaginatedResponse<WorkStandardItem>> {
-    return apiClient.get('/work-standards', { params })
+    const response = await apiClient.get<StandardsResponse>('/work-standards', { params }) as unknown as StandardsResponse
+    const items = response.data || []
+    return {
+      items,
+      total: items.length,
+      page: params?.page || 1,
+      pageSize: params?.pageSize || items.length || 50
+    }
   },
   
   getById(id: number): Promise<WorkStandardItem> {

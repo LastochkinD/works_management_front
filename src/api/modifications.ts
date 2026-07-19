@@ -10,9 +10,21 @@ export interface Modification {
   series?: { id: number; name: string; generation_id: number }
 }
 
+export interface ModificationsResponse {
+  success: boolean
+  data: Modification[]
+}
+
 export default {
-  getAll(params?: { series_id?: number; page?: number; pageSize?: number; name?: string }): Promise<PaginatedResponse<Modification>> {
-    return apiClient.get('/modifications', { params })
+  async getAll(params?: { series_id?: number; page?: number; pageSize?: number; name?: string }): Promise<PaginatedResponse<Modification>> {
+    const response = await apiClient.get<ModificationsResponse>('/modifications', { params }) as unknown as ModificationsResponse
+    const items = response.data || []
+    return {
+      items,
+      total: items.length,
+      page: params?.page || 1,
+      pageSize: params?.pageSize || items.length || 50
+    }
   },
   
   getById(id: number): Promise<Modification> {

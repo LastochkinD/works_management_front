@@ -10,9 +10,21 @@ export interface Model {
   brand?: { id: number; name: string }
 }
 
+export interface ModelsResponse {
+  success: boolean
+  data: Model[]
+}
+
 export default {
-  getAll(params?: { brand_id?: number; page?: number; pageSize?: number; name?: string }): Promise<PaginatedResponse<Model>> {
-    return apiClient.get('/models', { params })
+  async getAll(params?: { brand_id?: number; page?: number; pageSize?: number; name?: string }): Promise<PaginatedResponse<Model>> {
+    const response = await apiClient.get<ModelsResponse>('/models', { params }) as unknown as ModelsResponse
+    const items = response.data || []
+    return {
+      items,
+      total: items.length,
+      page: params?.page || 1,
+      pageSize: params?.pageSize || items.length || 50
+    }
   },
   
   getById(id: number, expand?: boolean): Promise<Model> {
