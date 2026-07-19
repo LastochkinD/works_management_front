@@ -1,10 +1,11 @@
 <script setup lang="ts">
-import { ref, onMounted, computed, watch } from 'vue'
+import { ref, onMounted, computed, watch, h } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import { useHierarchyStore } from '@/stores/hierarchy'
 import { useNotifications } from '@/composables/useNotifications'
 import AppPageHeader from '@/components/AppPageHeader.vue'
 import AppEntitySelector from '@/components/AppEntitySelector.vue'
+import AppActionButtons from '@/components/AppActionButtons.vue'
 
 const router = useRouter()
 const route = useRoute()
@@ -22,12 +23,6 @@ const entitySelection = ref({
 // Initialize on mount
 onMounted(async () => {
   await hierarchyStore.fetchBrands()
-  
-  const modelId = route.query.model_id ? Number(route.query.model_id) : null
-  if (modelId) {
-    // Need to find which brand/model this generation belongs to
-    // For now, just show the filter interface
-  }
 })
 
 watch([() => entitySelection.value.brand_id, () => entitySelection.value.model_id], ([brandId, modelId]) => {
@@ -71,12 +66,11 @@ const columns = [
   {
     title: 'Действия',
     key: 'actions',
-    render: (row: any) => ({
-      type: 'buttons',
+    render: (row: any) => h(AppActionButtons, {
       buttons: [
-        { type: 'primary', text: 'Серии', onclick: () => handleSeries(row.id) },
-        { type: 'default', text: 'Редактировать', onclick: () => handleEdit(row.id) },
-        { type: 'error', text: 'Удалить', onclick: () => handleDelete(row.id) }
+        { type: 'primary' as const, text: 'Серии', onClick: () => handleSeries(row.id) },
+        { type: 'default' as const, text: 'Редактировать', onClick: () => handleEdit(row.id) },
+        { type: 'error' as const, text: 'Удалить', onClick: () => handleDelete(row.id) }
       ]
     })
   }

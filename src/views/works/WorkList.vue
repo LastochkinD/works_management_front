@@ -1,10 +1,11 @@
 <script setup lang="ts">
-import { ref, onMounted, watch } from 'vue'
+import { ref, onMounted, watch, h } from 'vue'
 import { useRouter } from 'vue-router'
 import { useWorkStore } from '@/stores/work'
 import { useNotifications } from '@/composables/useNotifications'
 import AppPageHeader from '@/components/AppPageHeader.vue'
 import AppConfirmDialog from '@/components/AppConfirmDialog.vue'
+import AppActionButtons from '@/components/AppActionButtons.vue'
 
 const router = useRouter()
 const workStore = useWorkStore()
@@ -62,11 +63,10 @@ const columns = [
   {
     title: 'Действия',
     key: 'actions',
-    render: (row: any) => ({
-      type: 'buttons',
+    render: (row: any) => h(AppActionButtons, {
       buttons: [
-        { type: 'primary', text: 'Редактировать', onclick: () => handleEdit(row.id) },
-        { type: 'error', text: 'Удалить', onclick: () => handleDelete(row.id) }
+        { type: 'primary' as const, text: 'Редактировать', onClick: () => handleEdit(row.id) },
+        { type: 'error' as const, text: 'Удалить', onClick: () => handleDelete(row.id) }
       ]
     })
   }

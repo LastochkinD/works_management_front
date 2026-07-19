@@ -1,10 +1,11 @@
 <script setup lang="ts">
-import { ref, onMounted, computed, watch } from 'vue'
+import { ref, onMounted, computed, watch, h } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import { useHierarchyStore } from '@/stores/hierarchy'
 import { useNotifications } from '@/composables/useNotifications'
 import AppPageHeader from '@/components/AppPageHeader.vue'
 import { models, brands } from '@/api'
+import AppActionButtons from '@/components/AppActionButtons.vue'
 
 const router = useRouter()
 const route = useRoute()
@@ -64,12 +65,11 @@ const columns = [
   {
     title: 'Действия',
     key: 'actions',
-    render: (row: any) => ({
-      type: 'buttons',
+    render: (row: any) => h(AppActionButtons, {
       buttons: [
-        { type: 'primary', text: 'Поколения', onclick: () => handleGenerations(row.id) },
-        { type: 'default', text: 'Редактировать', onclick: () => handleEdit(row.id) },
-        { type: 'error', text: 'Удалить', onclick: () => handleDelete(row.id) }
+        { type: 'primary' as const, text: 'Поколения', onClick: () => handleGenerations(row.id) },
+        { type: 'default' as const, text: 'Редактировать', onClick: () => handleEdit(row.id) },
+        { type: 'error' as const, text: 'Удалить', onClick: () => handleDelete(row.id) }
       ]
     })
   }

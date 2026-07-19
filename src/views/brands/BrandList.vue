@@ -1,11 +1,12 @@
 <script setup lang="ts">
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, h } from 'vue'
 import { useRouter } from 'vue-router'
 import { useHierarchyStore } from '@/stores/hierarchy'
 import { useNotifications } from '@/composables/useNotifications'
+import { brands } from '@/api'
 import AppPageHeader from '@/components/AppPageHeader.vue'
 import AppConfirmDialog from '@/components/AppConfirmDialog.vue'
-import { brands } from '@/api'
+import AppActionButtons from '@/components/AppActionButtons.vue'
 
 const router = useRouter()
 const hierarchyStore = useHierarchyStore()
@@ -51,12 +52,11 @@ const columns = [
   {
     title: 'Действия',
     key: 'actions',
-    render: (row: any) => ({
-      type: 'buttons',
+    render: (row: any) => h(AppActionButtons, {
       buttons: [
-        { type: 'primary', text: 'Модели', onclick: () => handleModels(row.id) },
-        { type: 'default', text: 'Редактировать', onclick: () => handleEdit(row.id) },
-        { type: 'error', text: 'Удалить', onclick: () => handleDelete(row.id) }
+        { type: 'primary' as const, text: 'Модели', onClick: () => handleModels(row.id) },
+        { type: 'default' as const, text: 'Редактировать', onClick: () => handleEdit(row.id) },
+        { type: 'error' as const, text: 'Удалить', onClick: () => handleDelete(row.id) }
       ]
     })
   }

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, onMounted, computed, watch } from 'vue'
+import { ref, onMounted, computed, watch, h } from 'vue'
 import { useRouter } from 'vue-router'
 import { useStandardStore } from '@/stores/standard'
 import { useWorkStore } from '@/stores/work'
@@ -7,6 +7,7 @@ import { useHierarchyStore } from '@/stores/hierarchy'
 import { useNotifications } from '@/composables/useNotifications'
 import AppPageHeader from '@/components/AppPageHeader.vue'
 import AppLevelBadge from '@/components/AppLevelBadge.vue'
+import AppActionButtons from '@/components/AppActionButtons.vue'
 
 const router = useRouter()
 const standardStore = useStandardStore()
@@ -73,11 +74,7 @@ const columns = [
   { 
     title: 'Уровень', 
     key: 'level',
-    render: (row: any) => ({
-      type: 'component',
-      component: AppLevelBadge,
-      props: { level: getLevelType(row) }
-    })
+    render: (row: any) => h(AppLevelBadge, { level: getLevelType(row) })
   },
   { 
     title: 'Описание уровня', 
@@ -92,11 +89,10 @@ const columns = [
   {
     title: 'Действия',
     key: 'actions',
-    render: (row: any) => ({
-      type: 'buttons',
+    render: (row: any) => h(AppActionButtons, {
       buttons: [
-        { type: 'default', text: 'Редактировать', onclick: () => handleEdit(row.id) },
-        { type: 'error', text: 'Удалить', onclick: () => handleDelete(row.id) }
+        { type: 'default' as const, text: 'Редактировать', onClick: () => handleEdit(row.id) },
+        { type: 'error' as const, text: 'Удалить', onClick: () => handleDelete(row.id) }
       ]
     })
   }
